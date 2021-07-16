@@ -1,15 +1,6 @@
 {
 	"folders": [
 		{
-			"path": "leap"
-		},
-		{
-			"path": "reverse-string"
-		},
-		{
-			"path": "hello-world"
-		},
-		{
 			"path": "raindrops"
 		}
 	],
