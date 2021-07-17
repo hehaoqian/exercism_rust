@@ -8,7 +8,7 @@ pub struct Clock {
 
 impl Clock {
     pub fn new(hours: i32, minutes: i32) -> Self {
-        Clock {
+        Self {
             hours: (hours + minutes.div_euclid(60)).rem_euclid(24),
             minutes: minutes.rem_euclid(60),
         }
