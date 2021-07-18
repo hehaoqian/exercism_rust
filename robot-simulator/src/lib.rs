@@ -9,37 +9,72 @@ pub enum Direction {
     West,
 }
 
-pub struct Robot;
+pub struct Robot {
+    x: i32,
+    y: i32,
+    d: Direction,
+}
 
 impl Robot {
     pub fn new(x: i32, y: i32, d: Direction) -> Self {
-        unimplemented!("Create a robot at (x, y) ({}, {}) facing {:?}", x, y, d,)
+        Self { x, y, d }
     }
 
     pub fn turn_right(self) -> Self {
-        unimplemented!()
+        use Direction::*;
+        let d = match self.d {
+            North => East,
+            East => South,
+            South => West,
+            West => North,
+        };
+        Self { d, ..self }
     }
 
     pub fn turn_left(self) -> Self {
-        unimplemented!()
+        use Direction::*;
+        let d = match self.d {
+            North => West,
+            East => North,
+            South => East,
+            West => South,
+        };
+        Self { d, ..self }
     }
 
     pub fn advance(self) -> Self {
-        unimplemented!()
+        use Direction::*;
+        let x = match &self.d {
+            East => self.x + 1,
+            West => self.x - 1,
+            _ => self.x,
+        };
+        let y = match &self.d {
+            North => self.y + 1,
+            South => self.y - 1,
+            _ => self.y,
+        };
+        Self { x, y, ..self }
     }
 
     pub fn instructions(self, instructions: &str) -> Self {
-        unimplemented!(
-            "Follow the given sequence of instructions: {}",
-            instructions
-        )
+        let mut s = self;
+        for c in instructions.chars() {
+            s = match c {
+                'R' => s.turn_right(),
+                'L' => s.turn_left(),
+                'A' => s.advance(),
+                _ => s,
+            };
+        }
+        s
     }
 
     pub fn position(&self) -> (i32, i32) {
-        unimplemented!()
+        (self.x, self.y)
     }
 
     pub fn direction(&self) -> &Direction {
-        unimplemented!()
+        &self.d
     }
 }
