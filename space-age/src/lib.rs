@@ -1,38 +1,43 @@
-// The code below is a stub. Just enough to satisfy the compiler.
-// In order to pass the tests you can add-to or change any of this code.
-
-#[derive(Debug)]
-pub struct Duration;
+#[derive(Debug, Clone)]
+pub struct Duration {
+    seconds: u64,
+}
 
 impl From<u64> for Duration {
     fn from(s: u64) -> Self {
-        unimplemented!("s, measured in seconds: {}", s)
+        Self { seconds: s }
+    }
+}
+
+impl From<Duration> for u64 {
+    fn from(d: Duration) -> u64 {
+        d.seconds
     }
 }
 
 pub trait Planet {
-    fn years_during(d: &Duration) -> f64 {
-        unimplemented!(
-            "convert a duration ({:?}) to the number of years on this planet for that duration",
-            d,
-        );
-    }
+    fn years_during(d: &Duration) -> f64;
 }
 
-pub struct Mercury;
-pub struct Venus;
-pub struct Earth;
-pub struct Mars;
-pub struct Jupiter;
-pub struct Saturn;
-pub struct Uranus;
-pub struct Neptune;
+macro_rules! PlanetWithPeriod {
+    ($planet:ident,$years:expr) => {
+        pub struct $planet;
 
-impl Planet for Mercury {}
-impl Planet for Venus {}
-impl Planet for Earth {}
-impl Planet for Mars {}
-impl Planet for Jupiter {}
-impl Planet for Saturn {}
-impl Planet for Uranus {}
-impl Planet for Neptune {}
+        impl Planet for $planet {
+            fn years_during(d: &Duration) -> f64 {
+                const SECONDS_IN_YEARS: f64 = 31557600.0;
+                let s: u64 = d.clone().into();
+                s as f64 / ($years as f64) / SECONDS_IN_YEARS
+            }
+        }
+    };
+}
+
+PlanetWithPeriod!(Mercury, 0.2408467);
+PlanetWithPeriod!(Venus, 0.61519726);
+PlanetWithPeriod!(Earth, 1.0);
+PlanetWithPeriod!(Mars, 1.8808158);
+PlanetWithPeriod!(Jupiter, 11.862615);
+PlanetWithPeriod!(Saturn, 29.447498);
+PlanetWithPeriod!(Uranus, 84.016846);
+PlanetWithPeriod!(Neptune, 164.79132);
