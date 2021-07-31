@@ -1,63 +1,89 @@
 use std::io::{Read, Result, Write};
 
-pub struct ReadStats<R>(::std::marker::PhantomData<R>);
+pub struct ReadStats<R: Read> {
+    wrapped: R,
+    bytes: usize,
+    ops: usize,
+}
 
 impl<R: Read> ReadStats<R> {
-    // _wrapped is ignored because R is not bounded on Debug or Display and therefore
-    // can't be passed through format!(). For actual implementation you will likely
-    // wish to remove the leading underscore so the variable is not ignored.
-    pub fn new(_wrapped: R) -> ReadStats<R> {
-        unimplemented!()
+    pub fn new(wrapped: R) -> ReadStats<R> {
+        Self {
+            wrapped,
+            bytes: 0,
+            ops: 0,
+        }
     }
 
     pub fn get_ref(&self) -> &R {
-        unimplemented!()
+        &self.wrapped
     }
 
     pub fn bytes_through(&self) -> usize {
-        unimplemented!()
+        self.bytes
     }
 
     pub fn reads(&self) -> usize {
-        unimplemented!()
+        self.ops
     }
 }
 
 impl<R: Read> Read for ReadStats<R> {
     fn read(&mut self, buf: &mut [u8]) -> Result<usize> {
-        unimplemented!("Collect statistics about this call reading {:?}", buf)
+        let result = self.wrapped.read(buf);
+        self.ops += 1;
+        match result {
+            Ok(bytes) => {
+                self.bytes += bytes;
+                Ok(bytes)
+            }
+            x => x,
+        }
     }
 }
 
-pub struct WriteStats<W>(::std::marker::PhantomData<W>);
+pub struct WriteStats<W: Write> {
+    wrapped: W,
+    bytes: usize,
+    ops: usize,
+}
 
 impl<W: Write> WriteStats<W> {
-    // _wrapped is ignored because W is not bounded on Debug or Display and therefore
-    // can't be passed through format!(). For actual implementation you will likely
-    // wish to remove the leading underscore so the variable is not ignored.
-    pub fn new(_wrapped: W) -> WriteStats<W> {
-        unimplemented!()
+    pub fn new(wrapped: W) -> WriteStats<W> {
+        Self {
+            wrapped,
+            bytes: 0,
+            ops: 0,
+        }
     }
 
     pub fn get_ref(&self) -> &W {
-        unimplemented!()
+        &self.wrapped
     }
 
     pub fn bytes_through(&self) -> usize {
-        unimplemented!()
+        self.bytes
     }
 
     pub fn writes(&self) -> usize {
-        unimplemented!()
+        self.ops
     }
 }
 
 impl<W: Write> Write for WriteStats<W> {
     fn write(&mut self, buf: &[u8]) -> Result<usize> {
-        unimplemented!("Collect statistics about this call writing {:?}", buf)
+        let result = self.wrapped.write(buf);
+        self.ops += 1;
+        match result {
+            Ok(bytes) => {
+                self.bytes += bytes;
+                Ok(bytes)
+            }
+            x => x,
+        }
     }
 
     fn flush(&mut self) -> Result<()> {
-        unimplemented!()
+        self.wrapped.flush()
     }
 }
