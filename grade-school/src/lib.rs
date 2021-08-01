@@ -4,20 +4,28 @@
 // Normally, it's good practice to just do what Clippy tells you, but in this
 // case, we want to keep things relatively simple. The `Default` trait is not the point
 // of this exercise.
-#[allow(clippy::new_without_default)]
-pub struct School {}
+#![allow(clippy::new_without_default)]
+use std::collections::{BTreeSet, HashMap};
+pub struct School {
+    students: HashMap<String, u32>,
+}
 
 impl School {
     pub fn new() -> School {
-        unimplemented!()
+        Self { students: HashMap::new() }
     }
 
     pub fn add(&mut self, grade: u32, student: &str) {
-        unimplemented!("Add {} to the roster for {}", student, grade)
+        self.students.insert(student.to_string(), grade);
     }
 
     pub fn grades(&self) -> Vec<u32> {
-        unimplemented!()
+        self.students
+            .iter()
+            .map(|(_, &grade)| grade)
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect()
     }
 
     // If `grade` returned a reference, `School` would be forced to keep a `Vec<String>`
@@ -25,6 +33,12 @@ impl School {
     // the internal structure can be completely arbitrary. The tradeoff is that some data
     // must be copied each time `grade` is called.
     pub fn grade(&self, grade: u32) -> Vec<String> {
-        unimplemented!("Return the list of students in {}", grade)
+        self.students
+            .iter()
+            .filter(|(_, &g)| g == grade)
+            .map(|(student, _)| student.clone())
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect()
     }
 }
