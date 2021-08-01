@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 #[derive(Debug, PartialEq)]
 pub struct Dna {
     seq: String,
@@ -24,20 +22,8 @@ impl Dna {
     }
 
     pub fn into_rna(self) -> Rna {
-        let map = DNA_NUCLEOTIDES
-            .iter()
-            .cloned()
-            .zip(RNA_NUCLEOTIDES.iter().copied())
-            .collect::<HashMap<_, _>>();
-        Rna::new(
-            self.seq
-                .chars()
-                .into_iter()
-                .map(|c| *map.get(&c).unwrap())
-                .collect::<String>()
-                .as_str(),
-        )
-        .unwrap()
+        let map = |x| RNA_NUCLEOTIDES[DNA_NUCLEOTIDES.iter().position(|&c| c == x).unwrap()];
+        Rna::new(self.seq.chars().map(map).collect::<String>().as_str()).unwrap()
     }
 }
 
